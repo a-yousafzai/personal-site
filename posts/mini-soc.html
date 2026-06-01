@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Building mini-soc: a local SOC with osquery, Kafka, Elasticsearch, ML, and an LLM analyst — by Abubakar Yousafzai" />
+  <title>Building mini-soc — Abubakar Yousafzai</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Building mini-soc: a local SOC with osquery, Kafka, ML, and an LLM analyst" />
+  <meta property="og:description" content="A self-contained SOC on a laptop. Why I built it, what it does, and what it taught me about AI-powered security." />
+  <meta property="og:url" content="https://a-yousafzai.github.io/personal-site/posts/mini-soc.html" />
+  <meta property="og:image" content="https://a-yousafzai.github.io/personal-site/og-image.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">AY<span class="cursor">_</span></a>
+    <ul class="nav-links">
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#writing">Writing</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="post-page">
+    <a href="../index.html#writing" class="post-page-back">← back to writing</a>
+    <div class="post-page-meta">SIEM · ML · LLM</div>
+    <h1>Building <code>mini-soc</code>: a local SOC with osquery, Kafka, ML, and an LLM analyst</h1>
+    <p class="post-page-date">June 2026 · 9 min read · <a href="https://github.com/a-yousafzai/mini-soc" target="_blank" rel="noopener" style="color: var(--accent);">github.com/a-yousafzai/mini-soc</a></p>
+    <div class="post-page-body">
+
+      <p>I spend my day job running SIEM and endpoint security at the scale of multiple terabytes per day across 1.4M endpoints. There's a thing about that scale: most days you don't actually <em>see</em> the system. You see the dashboards, the SLOs, the budget meetings, the incident retros. The pipes themselves are abstractions.</p>
+
+      <p>I missed seeing the pipes.</p>
+
+      <p>So I built <strong><code>mini-soc</code></strong> — a self-contained Security Operations Center that runs on my laptop. osquery on the endpoint, Kafka in the middle, Elasticsearch + Kibana on the back, two ML services consuming the topics, and an LLM-backed AI analyst summarizing what comes out the other side. It's the same architectural shape as a real SOC, compressed into <code>docker compose up</code>.</p>
+
+      <p>This post is about why I built it, what's in it, and what it taught me about building AI-powered security products — which is what I actually want to spend the next decade doing.</p>
+
+      <h2>Why a "mini" SOC, not a real one</h2>
+
+      <p>Three reasons.</p>
+
+      <p><strong>One: I wanted a sandbox where I could break things.</strong> In a 24/7 enterprise SIEM, you don't get to swap out the message bus on a Tuesday afternoon to see what happens. In <code>mini-soc</code>, I can.</p>
+
+      <p><strong>Two: I wanted a place to test ideas about LLMs in detection &amp; response.</strong> The honest version of "AI in security" right now is: vendors over-promise, practitioners under-trust, and nobody quite knows what the right unit of work is for an LLM in a SOC. The only way to develop a real opinion is to ship something — even a small thing — and watch it behave.</p>
+
+      <p><strong>Three: I wanted my hands on osquery again.</strong> I was the team lead for open-source endpoint visibility at Comcast for years. osquery was a daily companion. <code>mini-soc</code> is partly nostalgia.</p>
+
+      <h2>The architecture</h2>
+
+      <p>The shape mirrors what most enterprise SOCs actually look like, just collapsed onto one host.</p>
+
+      <pre style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; color: var(--text-dim); line-height: 1.6;">
+endpoint            transport            storage / UI            intelligence
+─────────           ──────────            ─────────────           ─────────────
+osqueryd  ──┐
+            ├──► Logstash ──► Kafka ──► Elasticsearch ──► Kibana
+syslog    ──┘                  │
+                               ├──► ml-service          (syslog · Drain3)
+                               ├──► ml-service-osquery  (anomaly scoring)
+                               └──► ai-analyst          (LLM summarization)
+      </pre>
+
+      <p>Every piece is a deliberate choice. A few worth calling out.</p>
+
+      <h3>osquery as the endpoint sensor</h3>
+
+      <p>osquery is the closest open-source equivalent to a real EDR data source. It exposes the host as a SQL-queryable surface — processes, sockets, file integrity, scheduled tasks. For a SOC sandbox, it gets you 80% of "what is this endpoint doing right now" without writing a single C++ line.</p>
+
+      <p>One small wrinkle worth documenting, because it bit me and will bite anyone who tries this: <strong>the macOS osquery build commonly installed locally does not include the Kafka logger plugin.</strong> So <code>mini-soc</code> takes a small, deliberate detour: osquery writes to a filesystem log, Logstash tails it, Logstash publishes to Kafka. You still get the Kafka hop — you just don't have to rebuild osquery from source to get there. If you have a build with the plugin, the native path is supported too.</p>
+
+      <h3>Kafka in the middle, even at toy scale</h3>
+
+      <p>You don't <em>need</em> Kafka for a single laptop. You can stream osquery directly into Elasticsearch and call it a day. I put Kafka in anyway because the entire point of <code>mini-soc</code> is to mirror the shape of real systems, and in real systems, the message bus is the thing that changes everything.</p>
+
+      <p>Specifically: <strong>once you have a durable bus, you can fan out consumers without coupling them to ingestion.</strong> The two ML services and the AI analyst all consume the same topics independently. If one of them crashes, the bus doesn't care. If I want to add a fourth consumer tomorrow — say, a detection-rule engine — I don't have to touch ingestion. That property is the entire reason real SOCs run on Kafka, and it's worth feeling at small scale.</p>
+
+      <h3>Two ML services, doing different jobs</h3>
+
+      <p>The syslog ML service uses <strong>Drain3</strong> — a streaming log-template miner. It clusters log lines into templates and emits anomalies when a new template appears or when a known template's frequency shifts. It's the kind of thing that's been quietly powering log-anomaly products for years and almost nobody talks about.</p>
+
+      <p>The osquery ML service does straightforward anomaly scoring on event distributions — process names, parent-child trees, network destinations. It's not magic. It doesn't have to be. Most "weird" things on a host are weird because <em>they haven't happened before</em>, and a frequency-based scorer catches a surprising amount of that.</p>
+
+      <h3>ai-analyst — the LLM piece</h3>
+
+      <p>This is the part that matters most to me, and the part I think about every day at work.</p>
+
+      <p>The <code>ai-analyst</code> service consumes from Kafka and produces short, human-readable summaries of what the ML services flagged. <strong>It does not decide what is malicious.</strong> It does not autonomously close tickets. It does not take action. It writes a paragraph that an analyst can read in 10 seconds instead of a JSON blob they have to read in 90.</p>
+
+      <p>That distinction is the whole thesis of how I think LLMs should plug into security workflows today.</p>
+
+      <h2>What this taught me about AI-powered security</h2>
+
+      <p>I want to be specific here, because "AI for security" is a phrase that's lost most of its meaning.</p>
+
+      <h3>1. The right unit of work for an LLM in a SOC is the analyst's reading time</h3>
+
+      <p>Every alert in a real SOC has a hidden cost: the seconds an analyst spends parsing it. A noisy alert that takes 30 seconds to dismiss costs 30 seconds × the number of times it fires × the number of analysts in the rotation. Multiply that out across a year and you're looking at full FTEs burned on dismissal.</p>
+
+      <p>LLMs are <strong>extraordinary</strong> at compressing analyst reading time. A two-paragraph natural-language summary of a 4KB JSON event is the cheapest, most reliable, highest-leverage AI feature in security right now. It's also the least exciting. Vendors don't lead with it because it doesn't sound impressive. It just works.</p>
+
+      <h3>2. Autonomous action is mostly a trap</h3>
+
+      <p>"AI agent that triages every alert and closes the false positives" is a great pitch deck and a terrible production system. The failure mode is silent. The blast radius is the entire SOC. You will not catch the regression in evals.</p>
+
+      <p>What works instead: LLMs as <strong>copilots that propose</strong>. The human stays in the loop. The LLM gets graded on whether its proposals turned out to be right. Over time, you can promote specific narrow proposals to autonomous — "auto-close alerts of type X under condition Y where the LLM has been &gt;99% correct for 90 days." That promotion has to be earned, per-class, with telemetry.</p>
+
+      <p>This is the model <code>ai-analyst</code> uses. It summarizes. A human reads. Maybe later, specific summaries graduate to specific automated actions. Not today.</p>
+
+      <h3>3. Evaluation is the actual hard problem</h3>
+
+      <p>The most important thing I learned writing <code>ai-analyst</code> is that <em>summarizing security events is easy</em>. <strong>Knowing whether the summary was accurate is the hard problem.</strong> There's no ground truth. The "correct" summary is a fuzzy thing — it depends on what the on-call analyst needs to know, what's already in their context, and what they were planning to do next.</p>
+
+      <p>This is the thing I'd want to spend real time on at a place that takes evaluation seriously. Anthropic is one of the few companies in the world that takes it seriously enough.</p>
+
+      <h2>What's next for mini-soc</h2>
+
+      <p>The repo is a sandbox, not a product, and I want to keep it that way. But there are three things I want to add:</p>
+
+      <ul>
+        <li><strong>A tiny detection-rule engine</strong> consuming from Kafka, so I can A/B classical rules vs. ML-driven anomaly scoring on the same input stream.</li>
+        <li><strong>Eval harness for the AI analyst.</strong> Even a toy one. Pre-graded summaries, structured comparison, drift detection. The point isn't to score well; it's to build the muscle of always evaluating.</li>
+        <li><strong>A scenario generator</strong> — synthetic but realistic intrusion patterns that produce the kind of telemetry a real SOC would see, so the whole pipeline can be exercised end-to-end on demand.</li>
+      </ul>
+
+      <p>None of that is in the repo today. It will be.</p>
+
+      <h2>Why I'm posting this</h2>
+
+      <p>Because the gap between "I lead a SIEM platform at TB/day" and "I write code that LLMs touch" is something I want to close in public.</p>
+
+      <p>I've spent ten years building security products that protect millions of endpoints. The next ten, I want to spend building security products that are <strong>trustworthy</strong> — where AI helps the people who do the hard work, doesn't replace their judgment, and earns autonomy slowly. <code>mini-soc</code> is the smallest version of that I could ship in a weekend. It's not the work. It's a signal that I'm doing the work.</p>
+
+      <p>The repo is here: <a href="https://github.com/a-yousafzai/mini-soc" target="_blank" rel="noopener" style="color: var(--accent);">github.com/a-yousafzai/mini-soc</a>. Issues and PRs welcome. <a href="../index.html#contact" style="color: var(--accent);">Reach out</a> if you're building in this space — I'd love to compare notes.</p>
+
+    </div>
+  </article>
+
+  <script src="../script.js"></script>
+</body>
+</html>

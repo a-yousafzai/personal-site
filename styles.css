@@ -603,6 +603,36 @@ body::before {
   padding: 3px 8px;
   border-radius: 4px;
 }
+.post-status-live {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+.post-card-featured {
+  border-color: rgba(0, 255, 170, 0.3);
+  box-shadow: 0 0 0 1px var(--accent-glow);
+  grid-column: span 2;
+}
+@media (max-width: 800px) {
+  .post-card-featured { grid-column: auto; }
+}
+.post-card h3 code,
+.post-card p code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background: var(--bg-soft);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--accent);
+}
+.post-page h1 code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  -webkit-text-fill-color: var(--accent);
+  background: var(--accent-glow);
+  padding: 2px 10px;
+  border-radius: 6px;
+}
 .post-card h3 {
   font-size: 19px;
   font-weight: 600;
