@@ -3,7 +3,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 // reveal on scroll
 const revealEls = document.querySelectorAll(
-  '.section-head, .about-grid, .timeline-item, .skill-card, .edu-card, .contact-link, .contact-lead'
+  '.section-head, .about-grid, .impact-lead, .impact-card, .timeline-item, .skill-card, .edu-card, .contact-link, .contact-lead'
 );
 revealEls.forEach((el) => el.classList.add('reveal'));
 

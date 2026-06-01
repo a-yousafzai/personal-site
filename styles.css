@@ -313,6 +313,92 @@ body::before {
   .stats { grid-template-columns: 1fr 1fr; }
 }
 
+/* ---------- impact / case studies ---------- */
+.impact-lead {
+  font-size: 17px;
+  color: var(--text-dim);
+  max-width: 720px;
+  margin: -32px 0 40px;
+}
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.impact-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.impact-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-glow), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.impact-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 255, 170, 0.1);
+}
+.impact-card:hover::before { opacity: 1; }
+.impact-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.impact-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: var(--accent-glow);
+  border-radius: 4px;
+}
+.impact-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.impact-card p {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+.impact-card strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.impact-context strong,
+.impact-action strong,
+.impact-result strong {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-right: 6px;
+}
+@media (max-width: 800px) {
+  .impact-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- timeline ---------- */
 .timeline {
   list-style: none;

@@ -3,8 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Abubakar Yousafzai — Director of Software Engineering. Endpoint security, SIEM, big data platforms at web scale." />
+  <meta name="description" content="Abubakar Yousafzai — Director of Software Engineering. SIEM, endpoint security, and big-data platforms at web scale (1.4M endpoints, TB/day)." />
   <title>Abubakar Yousafzai — Director of Software Engineering</title>
+
+  <!-- favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Abubakar Yousafzai — Director of Software Engineering" />
+  <meta property="og:description" content="Engineering leader. SIEM, endpoint security, and big-data platforms at web scale — 1.4M endpoints, TB/day." />
+  <meta property="og:url" content="https://a-yousafzai.github.io/personal-site/" />
+  <meta property="og:image" content="https://a-yousafzai.github.io/personal-site/og-image.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Abubakar Yousafzai — Director of Software Engineering" />
+  <meta name="twitter:description" content="SIEM, endpoint security, big-data platforms at web scale." />
+  <meta name="twitter:image" content="https://a-yousafzai.github.io/personal-site/og-image.svg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -17,6 +32,7 @@
     <a href="#top" class="nav-logo">AY<span class="cursor">_</span></a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
+      <li><a href="#impact">Impact</a></li>
       <li><a href="#experience">Experience</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -35,6 +51,7 @@
       </p>
       <div class="hero-cta">
         <a href="#experience" class="btn btn-primary">View experience</a>
+        <a href="Abubakar_Yousafzai_Resume.pdf" class="btn btn-ghost" download>Download résumé ↓</a>
         <a href="#contact" class="btn btn-ghost">Get in touch</a>
       </div>
       <div class="hero-meta">
@@ -79,9 +96,64 @@
     </div>
   </section>
 
-  <section id="experience" class="section">
+  <section id="impact" class="section">
     <div class="section-head">
       <span class="section-num">02</span>
+      <h2>Selected Impact</h2>
+    </div>
+    <p class="impact-lead">
+      Four stories that show how I lead — from prototype to scaled, paying-customer
+      deployments. Drawn from the work I'm proudest of across Salesforce and Comcast.
+    </p>
+
+    <div class="impact-grid">
+
+      <article class="impact-card">
+        <div class="impact-card-head">
+          <span class="impact-tag">SIEM · Detection &amp; Response</span>
+          <h3>Salesforce SIEM at TB/day scale</h3>
+        </div>
+        <p class="impact-context"><strong>Context:</strong> CSOC needed a single ingestion plane spanning every Salesforce business unit, with strict MTTD/MTTR SLAs and constant pressure to lower signal-to-noise.</p>
+        <p class="impact-action"><strong>What I did:</strong> Took ownership of the SIEM platform within CSOC Engineering — ingestion, parsing, detection enablement, and 24/7 ops. Drove an SNR program to retire low-value sources and tighten high-value ones, and partnered with Detection Engineering to keep alert quality on a forward trend.</p>
+        <p class="impact-result"><strong>Result:</strong> Multiple terabytes/day flowing reliably across BUs; CSOC holding MTTD/MTTR SLAs while data quality climbs and noise drops.</p>
+      </article>
+
+      <article class="impact-card">
+        <div class="impact-card-head">
+          <span class="impact-tag">Endpoint Security · Control Plane</span>
+          <h3>Security control plane for 1.4M endpoints</h3>
+        </div>
+        <p class="impact-context"><strong>Context:</strong> Custom security controls were fragmented across acquired business units — inconsistent coverage, slow rollouts, painful changes.</p>
+        <p class="impact-action"><strong>What I did:</strong> Centralized the security control plane for 1.4M endpoints, paired with a Change Management &amp; Change Safety framework so large rollouts could land predictably. Managed the global team across US, Europe, and India that owns it.</p>
+        <p class="impact-result"><strong>Result:</strong> One control plane across the fleet; 1M+ endpoints migrated across <strong>41 BUs</strong> through complex M&amp;A transitions with no major outages.</p>
+      </article>
+
+      <article class="impact-card">
+        <div class="impact-card-head">
+          <span class="impact-tag">Big Data · Security Intelligence</span>
+          <h3>Home-grown big-data platform for SecOps</h3>
+        </div>
+        <p class="impact-context"><strong>Context:</strong> Comcast SecOps needed log analytics and security-intelligence visualization that off-the-shelf tooling couldn't deliver at the org's volume and cost profile.</p>
+        <p class="impact-action"><strong>What I did:</strong> Architected the platform ground-up using Hadoop / Spark / Airflow patterns, partnered with Threat Modeling and PenTest, and wrapped it with a logging-onboarding workflow other teams could self-serve.</p>
+        <p class="impact-result"><strong>Result:</strong> Became the analytics backbone for Comcast global security operations; later extended into a Salesforce-side data platform for security health reporting and autonomous-remediation telemetry.</p>
+      </article>
+
+      <article class="impact-card">
+        <div class="impact-card-head">
+          <span class="impact-tag">Operations · Automation</span>
+          <h3>80% reduction in operational ticket volume</h3>
+        </div>
+        <p class="impact-context"><strong>Context:</strong> The endpoint security team was spending more time on toil than on engineering — common asks were repeating themselves, week after week.</p>
+        <p class="impact-action"><strong>What I did:</strong> Drove a custom automation effort across the most frequent ticket categories, ran the team in Agile/Scrum, and protected eng time so the automation could actually ship.</p>
+        <p class="impact-result"><strong>Result:</strong> <strong>80%</strong> drop in operational ticket volume and <strong>20%</strong> increase in delivery throughput — without growing the team.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="experience" class="section">
+    <div class="section-head">
+      <span class="section-num">03</span>
       <h2>Experience</h2>
     </div>
     <ol class="timeline">
@@ -206,7 +278,7 @@
 
   <section id="skills" class="section">
     <div class="section-head">
-      <span class="section-num">03</span>
+      <span class="section-num">04</span>
       <h2>Skills &amp; Stack</h2>
     </div>
     <div class="skills-grid">
@@ -276,7 +348,7 @@
 
   <section id="education" class="section">
     <div class="section-head">
-      <span class="section-num">04</span>
+      <span class="section-num">05</span>
       <h2>Education</h2>
     </div>
     <div class="edu-grid">
@@ -297,7 +369,7 @@
 
   <section id="contact" class="section contact">
     <div class="section-head">
-      <span class="section-num">05</span>
+      <span class="section-num">06</span>
       <h2>Let's connect</h2>
     </div>
     <p class="contact-lead">
