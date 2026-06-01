@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Why most SIEM programs fail at signal-to-noise — by Abubakar Yousafzai" />
+  <title>Why most SIEM programs fail at SNR — Abubakar Yousafzai</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">AY<span class="cursor">_</span></a>
+    <ul class="nav-links">
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#writing">Writing</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="post-page">
+    <a href="../index.html#writing" class="post-page-back">← back to writing</a>
+    <div class="post-page-meta">SIEM · Detection</div>
+    <h1>Why most SIEM programs fail at signal-to-noise — and how to fix it</h1>
+    <p class="post-page-date">Draft · Coming soon</p>
+    <div class="post-page-body">
+      <p>This post is in progress. The short version: most SIEM SNR problems aren't a detection-engineering problem — they're an <strong>ingestion-economics</strong> problem. Nobody owns the cost of a noisy log source, so nobody retires it.</p>
+      <p>Topics I'll cover when this is finished:</p>
+      <ul>
+        <li>How to actually measure SNR in a way that survives a budget meeting</li>
+        <li>The four log-source archetypes and which ones to fight for</li>
+        <li>Why "tune your detections" is the wrong first move</li>
+        <li>What changed when we ran ingestion as a product, not a platform</li>
+      </ul>
+      <p>Want to see this finished sooner? <a href="../index.html#contact" style="color: var(--accent);">Drop me a note</a> and I'll move it up the queue.</p>
+    </div>
+  </article>
+
+  <script src="../script.js"></script>
+</body>
+</html>
